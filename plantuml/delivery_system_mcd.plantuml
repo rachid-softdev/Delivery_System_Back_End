@@ -1,0 +1,40 @@
+@startuml
+!define ENTITY class
+!define ENDENTITY end class
+!define COLLECTION "{ordered}List"
+
+package "Entities" {
+  
+  ENTITY RoundEntity << (E, #FF7700) >> {
+    id: Long
+    createdAt: Instant
+    updatedAt: Instant
+    publicId: String
+    name: String
+    startDate: Instant
+    endDate: Instant
+  }
+  RoundEntity "1" *-- "0..1" DriverEntity : driver
+  RoundEntity "1" *-- "*" DeliveryEntity : deliveries
+
+  ENTITY DriverEntity << (E, #FF7700) >> {
+    id: Long
+    createdAt: Instant
+    updatedAt: Instant
+    publicId: String
+    name: String
+    isAvailable: boolean
+  }
+  DriverEntity "*" -- "1..*" RoundEntity : rounds
+
+  ENTITY DeliveryEntity << (E, #FF7700) >> {
+    id: Long
+    createdAt: Instant
+    updatedAt: Instant
+    publicId: String
+  }
+  DeliveryEntity "1" -- "*" RoundEntity : round
+
+}
+
+@enduml

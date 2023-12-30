@@ -1,0 +1,66 @@
+version: '3'
+
+services:
+
+  application:
+    container_name: ${SPRING_CONTAINER_NAME}
+    restart: always
+    ports:
+      - ${SPRING_HOST}:${SPRING_PORT}:${SPRING_CONTAINER_PORT}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      - SPRING_HOST=${SPRING_HOST}
+      - SPRING_PORT=${SPRING_PORT}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://${POSTGRES_CONTAINER_NAME}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - SPRING_DATASOURCE_DATABASE=${SPRING_DATASOURCE_DATABASE}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO}
+          
+  db:
+    image: 'postgres:15.4'
+    container_name: ${POSTGRES_CONTAINER_NAME}
+    restart: always
+    ports:
+      - ${POSTGRES_HOST}:${POSTGRES_PORT}:${POSTGRES_CONTAINER_PORT}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+
+  adminer:
+    image: adminer
+    container_name: ${ADMINER_CONTAINER_NAME}
+    restart: always
+    ports:
+      - ${ADMINER_HOST}:${ADMINER_PORT}:${ADMINER_CONTAINER_PORT}
+  
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0.2
+    container_name: ${KEYCLOAK_CONTAINER_NAME}
+    # restart: always
+    restart: no
+    ports:
+      - ${KEYCLOAK_PORT}:${KEYCLOAK_CONTAINER_PORT}
+    volumes:
+      - ./data:/opt/keyclock/data/import
+    environment:
+      - KEYCLOAK_ENABLED=${KEYCLOAK_ENABLED}
+      - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
+      - KEYCLOCK_DATABASE=${KEYCLOCK_DATABASE}
+      - KEYCLOCK_DATABASE_URL=${KEYCLOCK_DATABASE_URL}
+      - KEYCLOCK_DATABASE_USERNAME=${KEYCLOCK_DATABASE_USERNAME}
+      - KEYCLOCK_DATABASE_PASSWORD=${KEYCLOCK_DATABASE_PASSWORD}
+    depends_on:
+      - db
+
+volumes:
+  pgdata:

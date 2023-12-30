@@ -1,0 +1,55 @@
+name: CI/CD pour Delivery System - back-end
+
+# Lors d'un push sur les branches develop,main,integration, les jobs démarrent :
+on:
+  push:
+    branches: [develop,main,integration]
+
+jobs:
+
+  build:
+    name: Build Delivery System Application
+    runs-on: ubuntu-latest
+    steps:
+      # Vérification du code
+      - name: Checkout code
+        uses: actions/checkout@v3
+      # Installation de la version Java 17
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: 17
+      # Lancement des tests
+      - name: Tests
+        run: mvn -B test --file pom.xml
+      # Construction de l'application dans un paquetage
+      - name: Build the application
+        run: |
+            mvn clean
+            mvn -B package --file pom.xml
+      # Construction de l'image de l'application sur Docker
+      - name: Build Docker Image
+        uses: actions/build-push-action@v2
+        with:
+          context: .
+          dockerfile: Dockerfile
+          push: false
+          # latest=tags de la version du dépôt
+          tags: ${{secrets.DOCKER_USERNAME}}/Delivery_System_Back_End:latest
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets. DOCKER_HUB_USERNAME}}
+          password: ${{ secrets. DOCKER_HUB_ACCESS_TOKEN }}
+      
+      - name: Push Docker Image
+        uses: actions/build-push-action@v2
+        with:
+          context: .
+          dockerfile: Dockerfile
+          push: true
+          # latest=tags de la version du dépôt
+          tags: ${{secrets.DOCKER_USERNAME}}/Delivery_System_Back_End:latest
+

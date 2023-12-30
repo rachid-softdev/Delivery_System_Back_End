@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>404 - Ressource non trouvée</title>
+    <!-- Ajoutez le CDN de Tailwind CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-md">
+      <h2 class="text-3xl font-semibold mb-4">404 - Ressource non trouvée</h2>
+      <p>La ressource demandée n'a pas été trouvée.</p>
+      <table class="mt-4 w-full border-collapse border">
+        <tr>
+          <th class="border p-2">Message d'erreur</th>
+          <td class="border p-2" th:text="${message}"></td>
+        </tr>
+        <tr>
+          <th class="border p-2">Code de statut</th>
+          <td class="border p-2" th:text="${status}"></td>
+        </tr>
+        <tr>
+          <th class="border p-2">Exception</th>
+          <td class="border p-2" th:text="${exception}"></td>
+        </tr>
+        <tr>
+          <th class="border p-2">Stacktrace</th>
+          <td class="border p-2"><pre th:text="${trace}"></pre></td>
+        </tr>
+        <tr>
+          <th class="border p-2">Erreurs de liaison</th>
+          <td class="border p-2" th:text="${errors}"></td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
